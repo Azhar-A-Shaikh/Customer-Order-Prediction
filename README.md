@@ -41,3 +41,70 @@ File Descriptions and Data Field Information
 #### Additional Notes
 * Wages in the public sector are paid every two weeks on the 15 th and on the last day of the month. Supermarket sales could be affected by this.
 * A magnitude 7.8 earthquake struck Ecuador on April 16, 2016. People rallied in relief efforts donating water and other first need products which greatly affected supermarket sales for several weeks after the earthquake.
+
+# Task performed 
+
+### Importing necessary libraries:
+
+* sys module
+* awsglue.transforms module
+* awsglue.utils module
+* pyspark.context module
+* awsglue.context module
+* awsglue.job module
+* pyspark.sql.functions module
+
+### Initializing SparkContext and GlueContext:
+
+* Creating a SparkContext object sc
+* Creating a GlueContext object glueContext
+* Initializing Glue job:
+
+### Creating a Job object job
+
+* Initializing the job with the name "customer_order_job" using job.init()
+
+### Defining source file paths:
+
+* source_path_holidays pointing to "s3://orders_data/holidays_events.csv"
+* source_path_oil pointing to "s3://orders_data/oil.csv"
+* source_path_stores pointing to "s3://orders_data/stores.csv"
+* source_path_transactions pointing to "s3://orders_data/transactions.csv"
+* source_path_train pointing to "s3://orders_data/train.csv"
+
+### Defining the destination path:
+
+* destination_path pointing to "s3://result_order/"
+
+### Creating dynamic frames from source files:
+
+* df_holiday_event: Loading the CSV file from source_path_holidays using glueContext.create_dynamic_frame.from_options()
+* df_oil: Loading the CSV file from source_path_oil using glueContext.create_dynamic_frame.from_options()
+* df_stores: Loading the CSV file from source_path_stores using glueContext.create_dynamic_frame.from_options()
+* df_trans: Loading the CSV file from source_path_transactions using glueContext.create_dynamic_frame.from_options()
+* df_train: Loading the CSV file from source_path_train using glueContext.create_dynamic_frame.from_options()
+
+### Performing joins and column renaming:
+
+* Joining df_train with df_holiday_event on the "date" column
+* Joining the result with df_oil on the "date" column
+* Joining the result with df_stores on the "store_nbr" column
+* Joining the result with df_trans on the "date" and "store_nbr" columns
+* Renaming the "type" column to "holiday_type"
+* Renaming the "type1" column to "store_type"
+* Renaming the "family" column to "product_category"
+
+### Selecting specific fields and filling missing values:
+
+* Selecting the fields 'id', 'store_nbr', 'date', 'product_category', 'onpromotion', 'holiday_type', 'locale',
+  'transferred', 'dcoilwtico', 'store_type', 'cluster', 'transactions', and 'sales' from df
+* Filling missing values in the "dcoilwtico" column with the value 64.077
+
+### Creating additional columns for year, month, day, hour, minute, and day_of_week:
+
+* Converting df1 to a DataFrame df2
+* Adding new columns "year", "month", "day", "hour", "minute", and "day_of_week" using withColumn() and date_format()
+
+### Writing the resulting DataFrame to an S3 destination:
+
+* Using glueContext.write_dynamic_frame.from_options() to
